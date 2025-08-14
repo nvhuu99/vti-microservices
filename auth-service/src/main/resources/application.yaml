@@ -1,0 +1,38 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: auth-service
+    token-service:
+      access-token-exp-ms: 86400000    # 24 hours
+      refresh-token-exp-ms: 2592000000 # 30 days
+      jwt:
+        secret: ""
+
+  datasource:
+    url: ""
+    username: admin
+    password: admin@1234
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+  cloud:
+    config:
+      enabled: false
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: ""
+            clientSecret: ""
+
+eureka:
+  client:
+    serviceUrl:
+#      defaultZone: http://eureka-server:8761/eureka/
+      defaultZone: http://localhost:8761/eureka/
