@@ -2,16 +2,18 @@ package com.example.auth_service.api.responses;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class ApiResponse {
-    private Boolean success;
-    private String message;
-    private Object data;
-    private Object errors;
+    protected Boolean success;
+    protected String message;
+    protected Object data;
+    protected Object errors;
 
     public static ResponseEntity<ApiResponse> ok(Object data) {
         return ResponseEntity.ok(new ApiResponse(true, "", data, null));
@@ -26,7 +28,7 @@ public class ApiResponse {
     }
 
     public static ResponseEntity<ApiResponse> unAuthorized(String message) {
-        return new ResponseEntity<>(new ApiResponse(true, message, null, null), HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(new ApiResponse(false, message, null, null), HttpStatus.UNAUTHORIZED);
     }
 
     public static ResponseEntity<ApiResponse> notFound(String message) {
@@ -34,20 +36,10 @@ public class ApiResponse {
     }
 
     public static ResponseEntity<ApiResponse> badRequest(Object errors) {
-        return new ResponseEntity<>(new ApiResponse(
-                false,
-                null,
-                null,
-                errors
-        ), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new ApiResponse(false, null, null, errors), HttpStatus.BAD_REQUEST);
     }
 
-    public static ResponseEntity<ApiResponse> exception(String message) {
-        return new ResponseEntity<>(new ApiResponse(
-                false,
-                message,
-                null,
-                null
-        ), HttpStatus.INTERNAL_SERVER_ERROR);
+    public static ResponseEntity<ApiResponse> internalServerError(String message) {
+        return new ResponseEntity<>(new ApiResponse(false, message, null, null), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

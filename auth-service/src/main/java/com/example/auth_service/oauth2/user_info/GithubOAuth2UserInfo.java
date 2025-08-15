@@ -1,0 +1,32 @@
+package com.example.auth_service.oauth2.user_info;
+
+import java.util.Map;
+
+public class GithubOAuth2UserInfo extends OAuth2UserInfo {
+
+    public GithubOAuth2UserInfo(Map<String, Object> attributes) {
+        super(attributes);
+    }
+
+    @Override
+    public String getId() {
+        return (String)attributes.get("id");
+    }
+
+    @Override
+    public String getName() {
+        var name = attributes.get("name");
+        var login = attributes.get("login");
+        return (String) (name != null ? name : login);
+    }
+
+    @Override
+    public String getEmail() {
+        return (String)attributes.get("email");
+    }
+
+    @Override
+    public String getImageUrl() {
+        return (String)attributes.get("avatar_url");
+    }
+}

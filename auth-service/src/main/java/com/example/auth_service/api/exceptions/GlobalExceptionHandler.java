@@ -1,7 +1,7 @@
 package com.example.auth_service.api.exceptions;
 
 import com.example.auth_service.api.responses.ApiResponse;
-import com.example.auth_service.services.exceptions.NotFoundException;
+import com.example.auth_service.services.exceptions.user_service.NotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -12,6 +12,11 @@ import java.util.HashMap;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    @ExceptionHandler(value = AuthenticationFailureException.class)
+    public ResponseEntity<ApiResponse> handleAuthFailure(AuthenticationFailureException exception) {
+        return ApiResponse.unAuthorized(exception.getMessage());
+    }
+
     @ExceptionHandler(value = NotFoundException.class)
     public ResponseEntity<ApiResponse> handleNotFound(NotFoundException exception) {
         return ApiResponse.notFound(exception.getMessage());
@@ -27,5 +32,10 @@ public class GlobalExceptionHandler {
             }
         }
         return ApiResponse.badRequest(errs);
+    }
+
+    @ExceptionHandler(value = Exception.class)
+    public ResponseEntity<ApiResponse> handleUnknownException(Exception exception) {
+        return ApiResponse.internalServerError("Internal Server Error");
     }
 }
