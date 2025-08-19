@@ -2,6 +2,7 @@ package com.example.auth_service.oauth2;
 
 import com.example.auth_service.api.responses.AuthenticateSuccessResponse;
 import com.example.auth_service.models.User;
+import com.example.auth_service.oauth2.auth_request_state.OAuth2AuthRequestState;
 import com.example.auth_service.oauth2.user_info.OAuth2UserInfoFactory;
 import com.example.auth_service.repositories.UserRepository;
 import com.example.auth_service.services.token_service.TokenService;
@@ -31,6 +32,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         HttpServletResponse response,
         Authentication authentication
     ) throws IOException {
+
         var userInfo = userInfoFactory.create(authentication);
         User user = userRepo.findByEmail(userInfo.getEmail()).orElseGet(() -> {
             var newUser = new User();
@@ -40,13 +42,14 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
             return userRepo.save(newUser);
         });
 
-        response.setContentType("application/json");
-        response.setStatus(HttpStatus.OK.value());
-        response.getWriter().write(
-            new AuthenticateSuccessResponse(
-                tokenService.createAccessToken(user),
-                tokenService.createRefreshToken(user)
-            ).asJson()
-        );
+        var state = OAuth2AuthRequestState.fromJson(request.getParameter("state"));
+        state.set("username", user.getUsername());
+        state.set("accessToken", tokenService.createAccessToken(user));
+        state.set("refreshToken", tokenService.createRefreshToken(user));
+
+        var authorizedRedirect = state.get("authorizedRedirect");
+        authorizedRedirect += "?" + state.toURLQueries();
+
+        response.sendRedirect(authorizedRedirect);
     }
 }

@@ -2,6 +2,8 @@ package com.example.account_service.app.controllers;
 
 import com.example.account_service.services.auth_service.AuthServiceClient;
 import com.example.account_service.services.auth_service.exceptions.ApiResponseException;
+import com.example.account_service.services.auth_service.exceptions.BadCredentialsException;
+import com.example.account_service.services.auth_service.exceptions.InvalidParametersException;
 import com.example.account_service.services.auth_service.requests.BasicAuthenticateRequest;
 import com.example.account_service.services.auth_service.requests.RegisterUserRequest;
 import com.example.account_service.services.auth_service.responses.BasicAuthenticateResponse;
@@ -19,10 +21,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
-public class AccountController extends BaseController {
+public class AccountController {
 
     @Autowired
-    private UserService usrSvc;
+    private UserService userService;
 
     @Autowired
     private AuthServiceClient authServiceClient;
@@ -40,18 +42,14 @@ public class AccountController extends BaseController {
     ) {
         try {
             authServiceClient.register(body);
-            return "redirect:login";
+            return "redirect:/login";
         } catch (ApiResponseException apiErr) {
-            var message = apiErr.getResponse().getMessage();
-            var errors = apiErr.getResponse().getErrors();
-            if (errors != null) {
-                errors.forEach((field, errMsg) -> {
-                    bindingResult.rejectValue(field, "", errMsg);
-                });
+            if (apiErr instanceof InvalidParametersException) {
+                apiErr.getResponse().getErrors()
+                    .forEach((field, msg) -> bindingResult.rejectValue(field, "", msg));
             } else {
-                bindingResult.rejectValue("username", "", message);
+                return "redirect:/error";
             }
-
             return "register";
         }
     }
@@ -66,27 +64,29 @@ public class AccountController extends BaseController {
     public String login(
             @ModelAttribute("user") BasicAuthenticateRequest body,
             BindingResult bindingResult,
-            HttpServletResponse res,
-            Model model
+            HttpServletResponse res
     ) throws Exception {
         try {
             BasicAuthenticateResponse response = authServiceClient.authenticate(body);
-            usrSvc.setAuthTokens(
+
+            userService.setAuthTokens(
                 body.getUsername(),
                 response.getAccessToken(),
                 response.getRefreshToken()
             );
+
             CookieUtil.addCookie(res, "accessToken", response.getAccessToken());
+
             return "redirect:home";
+
         } catch (ApiResponseException apiErr) {
-            var message = apiErr.getResponse().getMessage();
-            var errors = apiErr.getResponse().getErrors();
-            if (errors != null) {
-                errors.forEach((field, errMsg) -> {
-                    bindingResult.rejectValue(field, "", errMsg);
-                });
+            if (apiErr instanceof BadCredentialsException) {
+                bindingResult.reject(apiErr.getMessage());
+            } else if (apiErr instanceof InvalidParametersException) {
+                apiErr.getResponse().getErrors()
+                    .forEach((field, msg) -> bindingResult.rejectValue(field, "", msg));
             } else {
-                bindingResult.rejectValue("username", "", message);
+                return "redirect:/error";
             }
             return "login";
         }

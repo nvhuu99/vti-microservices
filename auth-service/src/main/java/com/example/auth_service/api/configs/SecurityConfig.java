@@ -9,9 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
-
 
 @Configuration
 public class SecurityConfig {
@@ -25,6 +25,9 @@ public class SecurityConfig {
 
     @Autowired
     private OAuth2AuthenticationFailureHandler oauth2FailureHandler;
+
+    @Autowired
+    private OAuth2AuthorizationRequestResolver oauth2AuthorizationRequestResolver;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -43,6 +46,9 @@ public class SecurityConfig {
                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
             )
             .oauth2Login(oauth2 -> oauth2
+                .authorizationEndpoint(authorization ->
+                    authorization.authorizationRequestResolver(oauth2AuthorizationRequestResolver)
+                )
                 .successHandler(oauth2SuccessHandler)
                 .failureHandler(oauth2FailureHandler)
             );

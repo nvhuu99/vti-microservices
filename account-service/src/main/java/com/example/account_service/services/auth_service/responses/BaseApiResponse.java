@@ -17,4 +17,11 @@ public class BaseApiResponse {
     protected String message;
     protected Object data;
     protected Map<String, String> errors = new HashMap<>();
+
+    public Map<String, String> getErrors() {
+        if (errors != null) {
+            return errors;
+        }
+        return new HashMap<>();
+    }
 }

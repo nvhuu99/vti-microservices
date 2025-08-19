@@ -29,7 +29,7 @@ public class AuthController {
     @Autowired
     private TokenService tokenService;
 
-    @PostMapping("/authenticate")
+    @PostMapping("/basic-authenticate")
     public ResponseEntity<?> login(@Validated @RequestBody AuthenticateUser body) {
         try {
             var user = userService.authenticate(body.getUsername(), body.getPassword());

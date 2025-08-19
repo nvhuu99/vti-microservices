@@ -1,6 +1,6 @@
 spring:
   config:
-    import: optional:classpath:.env.localhost[.properties]
+    import: optional:classpath:.env.docker.localhost[.properties]
 
   application:
     name: ${SPRING_APP_NAME}
