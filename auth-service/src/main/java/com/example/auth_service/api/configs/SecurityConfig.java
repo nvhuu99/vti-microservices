@@ -51,7 +51,9 @@ public class SecurityConfig {
                 )
                 .successHandler(oauth2SuccessHandler)
                 .failureHandler(oauth2FailureHandler)
-            );
+            )
+            .formLogin(AbstractHttpConfigurer::disable)
+            .logout(AbstractHttpConfigurer::disable);
 
         return http.build();
     }

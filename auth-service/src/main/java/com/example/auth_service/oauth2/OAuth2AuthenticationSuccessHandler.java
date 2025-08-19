@@ -48,8 +48,8 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         state.set("refreshToken", tokenService.createRefreshToken(user));
 
         var authorizedRedirect = state.get("authorizedRedirect");
-        authorizedRedirect += "?" + state.toURLQueries();
+        var queries = state.toURLQueries();
 
-        response.sendRedirect(authorizedRedirect);
+        response.sendRedirect(authorizedRedirect + "?" + queries);
     }
 }

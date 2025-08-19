@@ -1,7 +1,6 @@
 package com.example.account_service.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +23,6 @@ public class UrlBuilder {
     private String scheme;
 
     private final Charset charset = StandardCharsets.UTF_8;
-
 
     public String build(String path, Map<String, Object> queries) {
         String base = scheme + "://" + host + ":" + port;

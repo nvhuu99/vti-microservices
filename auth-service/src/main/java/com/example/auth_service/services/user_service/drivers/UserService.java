@@ -4,8 +4,9 @@ import com.example.auth_service.models.User;
 import com.example.auth_service.services.user_details_service.AuthenticatedUser;
 import com.example.auth_service.repositories.UserRepository;
 import com.example.auth_service.services.user_service.dto.RegisterUser;
-import com.example.auth_service.services.user_service.user_service.BadCredentialsException;
-import com.example.auth_service.services.user_service.user_service.UsernameDuplicationException;
+import com.example.auth_service.services.user_service.exceptions.BadCredentialsException;
+import com.example.auth_service.services.user_service.exceptions.EmailDuplicationException;
+import com.example.auth_service.services.user_service.exceptions.UsernameDuplicationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,11 +31,6 @@ public class UserService implements com.example.auth_service.services.user_servi
     }
 
     @Override
-    public User findByEmail(String email) {
-        return userRepo.findByEmail(email).orElse(null);
-    }
-
-    @Override
     public User authenticate(String username, String password) throws BadCredentialsException {
         try {
             var result = authManager.authenticate(
@@ -48,9 +44,12 @@ public class UserService implements com.example.auth_service.services.user_servi
     }
 
     @Override
-    public User register(RegisterUser data) throws UsernameDuplicationException {
+    public User register(RegisterUser data) throws UsernameDuplicationException, EmailDuplicationException {
         if (userRepo.existsByUsername(data.getUsername())) {
             throw new UsernameDuplicationException();
+        }
+        if (userRepo.existsByEmail(data.getEmail())) {
+            throw new EmailDuplicationException();
         }
 
         var user = new User();

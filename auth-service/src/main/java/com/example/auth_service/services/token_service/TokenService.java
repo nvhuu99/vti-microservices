@@ -8,11 +8,11 @@ import com.example.auth_service.services.token_service.exceptions.TokenExpiredEx
 import com.example.auth_service.services.token_service.exceptions.TokenRejectedException;
 
 public interface TokenService {
-    public String createAccessToken(User user);
+    String createAccessToken(User user);
 
-    public String createRefreshToken(User user);
+    String createRefreshToken(User user);
 
-    public AccessTokenPayload verifyAccessToken(String token) throws InvalidTokenException, TokenExpiredException, TokenRejectedException;
+    AccessTokenPayload verifyAccessToken(String token) throws InvalidTokenException, TokenExpiredException, TokenRejectedException;
 
-    public RefreshTokenPayload verifyRefreshToken(String accessToken, String refreshToken) throws InvalidTokenException, TokenExpiredException, TokenRejectedException;
+    RefreshTokenPayload verifyRefreshToken(String accessToken, String refreshToken) throws InvalidTokenException, TokenExpiredException, TokenRejectedException;
 }

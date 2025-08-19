@@ -3,25 +3,28 @@ package com.example.account_service.utils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.Optional;
 
+@Component
 public class CookieUtil {
 
-    private static final int ONE_DAY = 24 * 60 * 60; // seconds
+    @Value("server.cookie.max-age-seconds")
+    private Integer maxAgeSeconds;
 
-    public static void addCookie(HttpServletResponse response, String name, String value) {
+    public void addCookie(HttpServletResponse response, String name, String value) {
         Cookie cookie = new Cookie(name, value);
         cookie.setHttpOnly(true);
         cookie.setSecure(false);
         cookie.setPath("/");
-        cookie.setMaxAge(ONE_DAY);
+        cookie.setMaxAge(maxAgeSeconds);
         response.addCookie(cookie);
     }
 
-    public static Optional<Cookie> getCookie(HttpServletRequest request, String name) {
+    public Optional<Cookie> getCookie(HttpServletRequest request, String name) {
         if (request.getCookies() != null) {
             return Arrays.stream(request.getCookies())
                 .filter(c -> name.equals(c.getName()))
@@ -30,7 +33,7 @@ public class CookieUtil {
         return Optional.empty();
     }
 
-    public static void deleteCookie(HttpServletResponse response, String name) {
+    public void deleteCookie(HttpServletResponse response, String name) {
         Cookie cookie = new Cookie(name, null);
         cookie.setPath("/");
         cookie.setHttpOnly(true);

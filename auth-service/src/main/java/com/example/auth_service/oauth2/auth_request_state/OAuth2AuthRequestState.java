@@ -43,7 +43,7 @@ public class OAuth2AuthRequestState {
             var json = new ObjectMapper().writeValueAsString(state);
             return json;
         } catch (Exception ignored) {
-            return "";
+            return "{}";
         }
     }
 

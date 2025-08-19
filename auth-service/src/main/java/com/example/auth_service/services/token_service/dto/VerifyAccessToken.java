@@ -1,5 +1,6 @@
 package com.example.auth_service.services.token_service.dto;
 
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,6 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class VerifyAccessToken {
-    @NotNull(message = "Access token is required")
+    @NotEmpty(message = "Access token is required")
     String accessToken;
 }

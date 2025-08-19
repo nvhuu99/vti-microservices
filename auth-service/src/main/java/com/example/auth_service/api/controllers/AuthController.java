@@ -10,8 +10,9 @@ import com.example.auth_service.services.user_service.UserService;
 import com.example.auth_service.services.user_service.dto.RegisterUser;
 import com.example.auth_service.services.token_service.exceptions.TokenExpiredException;
 import com.example.auth_service.services.token_service.exceptions.TokenRejectedException;
-import com.example.auth_service.services.user_service.user_service.BadCredentialsException;
-import com.example.auth_service.services.user_service.user_service.UsernameDuplicationException;
+import com.example.auth_service.services.user_service.exceptions.BadCredentialsException;
+import com.example.auth_service.services.user_service.exceptions.EmailDuplicationException;
+import com.example.auth_service.services.user_service.exceptions.UsernameDuplicationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -29,8 +30,8 @@ public class AuthController {
     @Autowired
     private TokenService tokenService;
 
-    @PostMapping("/basic-authenticate")
-    public ResponseEntity<?> login(@Validated @RequestBody AuthenticateUser body) {
+    @PostMapping("/basic-auth")
+    public ResponseEntity<?> basicAuth(@Validated @RequestBody AuthenticateUser body) {
         try {
             var user = userService.authenticate(body.getUsername(), body.getPassword());
             return ResponseEntity.ok(new AuthenticateSuccessResponse(
@@ -45,10 +46,11 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@Validated @RequestBody RegisterUser body) {
         try {
-            var user = userService.register(body);
-            return ResponseEntity.ok(user);
+            return ResponseEntity.ok(userService.register(body));
         } catch (UsernameDuplicationException exception) {
             return ApiResponse.badRequest("Invalid arguments", Map.of("username", exception.getMessage()));
+        } catch (EmailDuplicationException exception) {
+            return ApiResponse.badRequest("Invalid arguments", Map.of("email", exception.getMessage()));
         }
     }
 

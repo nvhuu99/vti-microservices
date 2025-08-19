@@ -13,15 +13,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 )
 public interface AuthServiceClient {
 
-    @PostMapping("/api/v1/auth/authenticate")
-    BasicAuthenticateResponse authenticate(@RequestBody BasicAuthenticateRequest body);
+    @PostMapping("/api/v1/auth/basic-auth")
+    BasicAuthenticateResponse authenticate(@RequestBody BasicAuthRequest body);
 
     @PostMapping("/api/v1/auth/register")
     RegisterUserResponse register(@RequestBody RegisterUserRequest body);
 
     @PostMapping("/api/v1/auth/verify")
     VerifyAccessTokenResponse verify(@RequestBody VerifyAccessTokenRequest body);
-
 
     @PostMapping("/api/v1/auth/refresh")
     RefreshAccessTokenResponse refresh(@RequestBody RefreshAccessTokenRequest body);
