@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{auth}">
+<head>
+    <title>Register</title>
+</head>
+<body>
+<div layout:fragment="content" class="text-center">
+    <div class="modal-dialog modal-login shadow" style="border-radius: 5px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Admin Register</h4>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/register}" th:object="${user}" method="post" novalidate>
+                    <div class="form-group">
+                        <input type="text" th:field="*{username}" id="username" class="form-control"
+                               th:classappend="${#fields.hasErrors('username')} ? 'is-invalid'" placeholder="Username">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" th:field="*{email}" id="email" class="form-control"
+                               th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'" placeholder="Email">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" th:field="*{password}" id="password" class="form-control"
+                               th:classappend="${#fields.hasErrors('password')} ? 'is-invalid'" placeholder="Password">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-lg btn-block login-btn">Register</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <a href="/login">Login</a>
+                <a href="/oauth2/authorization/google">Login with Google</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+

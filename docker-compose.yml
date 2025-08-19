@@ -24,6 +24,17 @@ services:
     networks:
       - vti-microservices
 
+  schema-service:
+    build:
+      context: ./schema-service
+      dockerfile: Dockerfile
+    container_name: schema-service
+    depends_on:
+      - mysql
+    restart: "no"
+    networks:
+      - vti-microservices
+
   eureka-server:
     container_name: eureka-server
     build:
@@ -35,15 +46,28 @@ services:
     networks:
       - vti-microservices
 
-  auth-service:
-    container_name: auth-service
-    build:
-      context: ./auth-service
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
-    depends_on:
-      - mysql
-      - eureka-server
-    networks:
-      - vti-microservices
+#  auth-service:
+#    container_name: auth-service
+#    build:
+#      context: ./auth-service
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      - mysql
+#      - eureka-server
+#    networks:
+#      - vti-microservices
+
+#  account-service:
+#    container_name: account-service
+#    build:
+#      context: ./account-service
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8081:8081"
+#    depends_on:
+#      - mysql
+#      - eureka-server
+#    networks:
+#      - vti-microservices

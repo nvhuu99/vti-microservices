@@ -1,23 +1,24 @@
-server:
-  port: 8080
-
 spring:
+  config:
+    import: optional:classpath:.env.localhost[.properties]
+
   application:
-    name: auth-service
+    name: ${SPRING_APP_NAME}
     token-service:
-      access-token-exp-ms: 86400000    # 24 hours
-      refresh-token-exp-ms: 2592000000 # 30 days
+      access-token-exp-ms: ${ACCESS_TOKEN_EXPIRE_MS}
+      refresh-token-exp-ms: ${REFRESH_TOKEN_EXPIRE_MS}
       jwt:
-        secret: ""
+        secret: ${TOKEN_SECRET}
 
   datasource:
-    url: ""
-    username: admin
-    password: admin@1234
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?createDatabaseIfNotExist=TRUE&characterEncoding=UTF-8&serverTimeZone=UTC&allowPublicKeyRetrieval=TRUE&useSSL=FALSE
+    username: ${DB_USER}
+    password: ${DB_PASS}
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none      # Only Schema Service should be able to update the database schemas
+    generate-ddl: false
 
   cloud:
     config:
@@ -28,11 +29,13 @@ spring:
       client:
         registration:
           google:
-            clientId: ""
-            clientSecret: ""
+            clientId: ${GOOGLE_OAUTH2_CLIENT_ID}
+            clientSecret: ${GOOGLE_OAUTH2_SECRET}
+
+server:
+  port: ${SERVER_PORT}
 
 eureka:
   client:
     serviceUrl:
-#      defaultZone: http://eureka-server:8761/eureka/
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: "http://${EUREKA_SERVER_HOST}:${EUREKA_SERVER_PORT}/eureka/"

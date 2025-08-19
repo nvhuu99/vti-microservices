@@ -1,7 +1,7 @@
 package com.example.auth_service.api.exceptions;
 
 import com.example.auth_service.api.responses.ApiResponse;
-import com.example.auth_service.services.exceptions.user_service.NotFoundException;
+import com.example.auth_service.services.user_service.user_service.NotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -14,7 +14,7 @@ import java.util.HashMap;
 public class GlobalExceptionHandler {
     @ExceptionHandler(value = AuthenticationFailureException.class)
     public ResponseEntity<ApiResponse> handleAuthFailure(AuthenticationFailureException exception) {
-        return ApiResponse.unAuthorized(exception.getMessage());
+        return ApiResponse.unAuthorized();
     }
 
     @ExceptionHandler(value = NotFoundException.class)
@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
             } catch (Exception ignored) {
             }
         }
-        return ApiResponse.badRequest(errs);
+        return ApiResponse.badRequest("Invalid arguments", errs);
     }
 
     @ExceptionHandler(value = Exception.class)

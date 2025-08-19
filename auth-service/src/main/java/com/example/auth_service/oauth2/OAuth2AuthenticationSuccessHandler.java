@@ -4,23 +4,14 @@ import com.example.auth_service.api.responses.AuthenticateSuccessResponse;
 import com.example.auth_service.models.User;
 import com.example.auth_service.oauth2.user_info.OAuth2UserInfoFactory;
 import com.example.auth_service.repositories.UserRepository;
-import com.example.auth_service.services.TokenService;
-import com.example.auth_service.services.drivers.user_service.UserService;
+import com.example.auth_service.services.token_service.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.OAuth2Token;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import jakarta.servlet.http.*;
 import java.io.IOException;
-import java.util.Map;
 
 @Component
 public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccessHandler {

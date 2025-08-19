@@ -2,16 +2,16 @@ package com.example.auth_service.api.controllers;
 
 import com.example.auth_service.api.responses.ApiResponse;
 import com.example.auth_service.api.responses.AuthenticateSuccessResponse;
-import com.example.auth_service.services.dto.token_service.RefreshAccessToken;
-import com.example.auth_service.services.dto.token_service.VerifyAccessToken;
-import com.example.auth_service.services.dto.user_service.AuthenticateUser;
-import com.example.auth_service.services.TokenService;
-import com.example.auth_service.services.UserService;
-import com.example.auth_service.services.dto.user_service.RegisterUser;
-import com.example.auth_service.services.exceptions.token_service.TokenExpiredException;
-import com.example.auth_service.services.exceptions.token_service.TokenRejectedException;
-import com.example.auth_service.services.exceptions.user_service.BadCredentialsException;
-import com.example.auth_service.services.exceptions.user_service.UsernameDuplicationException;
+import com.example.auth_service.services.token_service.dto.RefreshAccessToken;
+import com.example.auth_service.services.token_service.dto.VerifyAccessToken;
+import com.example.auth_service.services.user_service.dto.AuthenticateUser;
+import com.example.auth_service.services.token_service.TokenService;
+import com.example.auth_service.services.user_service.UserService;
+import com.example.auth_service.services.user_service.dto.RegisterUser;
+import com.example.auth_service.services.token_service.exceptions.TokenExpiredException;
+import com.example.auth_service.services.token_service.exceptions.TokenRejectedException;
+import com.example.auth_service.services.user_service.user_service.BadCredentialsException;
+import com.example.auth_service.services.user_service.user_service.UsernameDuplicationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -29,7 +29,7 @@ public class AuthController {
     @Autowired
     private TokenService tokenService;
 
-    @PostMapping("/login")
+    @PostMapping("/authenticate")
     public ResponseEntity<?> login(@Validated @RequestBody AuthenticateUser body) {
         try {
             var user = userService.authenticate(body.getUsername(), body.getPassword());
@@ -38,7 +38,7 @@ public class AuthController {
                 tokenService.createRefreshToken(user)
             ));
         } catch (BadCredentialsException ex) {
-            return ApiResponse.unAuthorized("Invalid credentials");
+            return ApiResponse.badRequest("Bad credentials", null);
         }
     }
 
@@ -48,7 +48,7 @@ public class AuthController {
             var user = userService.register(body);
             return ResponseEntity.ok(user);
         } catch (UsernameDuplicationException exception) {
-            return ApiResponse.badRequest(Map.of("username", exception.getMessage()));
+            return ApiResponse.badRequest("Invalid arguments", Map.of("username", exception.getMessage()));
         }
     }
 
@@ -57,12 +57,12 @@ public class AuthController {
         try {
             tokenService.verifyAccessToken(body.getAccessToken());
             return ApiResponse.ok(null);
-        } catch (TokenExpiredException ex) {
-            return ApiResponse.unAuthorized("Expired");
         } catch (TokenRejectedException ex) {
-            return ApiResponse.unAuthorized("Rejected");
-        } catch (Exception ex) {
-            return ApiResponse.unAuthorized("Invalid token");
+            return ApiResponse.unAuthorized();
+        } catch (TokenExpiredException ex) {
+            return ApiResponse.badRequest("Token expired", null);
+        }  catch (Exception ex) {
+            return ApiResponse.badRequest("Invalid token", null);
         }
     }
 
@@ -78,12 +78,12 @@ public class AuthController {
                     userService.findByUsername(payload.getSubject())
                 )
             ));
-        } catch (TokenExpiredException ex) {
-            return ApiResponse.unAuthorized("Expired");
         } catch (TokenRejectedException ex) {
-            return ApiResponse.unAuthorized("Rejected");
-        } catch (Exception ex) {
-            return ApiResponse.unAuthorized("Invalid token");
+            return ApiResponse.unAuthorized();
+        } catch (TokenExpiredException ex) {
+            return ApiResponse.badRequest("Token expired", null);
+        }  catch (Exception ex) {
+            return ApiResponse.badRequest("Invalid token", null);
         }
     }
 }
