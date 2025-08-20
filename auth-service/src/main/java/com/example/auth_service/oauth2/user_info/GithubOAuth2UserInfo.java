@@ -26,6 +26,9 @@ public class GithubOAuth2UserInfo extends OAuth2UserInfo {
     }
 
     @Override
+    public String getLoginId() { return (String)attributes.get("login"); }
+
+    @Override
     public String getImageUrl() {
         return (String)attributes.get("avatar_url");
     }

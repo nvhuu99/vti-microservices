@@ -43,14 +43,16 @@ public class UrlBuilder {
                     } else {
                         value = (String)entry.getValue();
                     }
-                    var encodedKey = URLEncoder.encode(entry.getKey(), charset);
-                    var encodedValue = URLEncoder.encode(value, charset);
-                    joiner.add(encodedKey + "=" + encodedValue);
+                    joiner.add(encode(entry.getKey()) + "=" + encode(value));
                 } catch (Exception ignored) {
                 }
             }
             url += "?" + joiner.toString();
         }
         return url;
+    }
+
+    public String encode(String value) {
+        return URLEncoder.encode(value, charset);
     }
 }

@@ -19,7 +19,6 @@ public class RegisterUser {
     String username;
 
     @Email(message = "Invalid email address")
-    @NotNull(message = "Email is required")
     @Length(min = 3, max = 255, message = "Email must be between 3 - 255 characters")
     String email;
 

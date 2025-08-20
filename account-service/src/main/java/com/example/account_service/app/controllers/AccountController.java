@@ -11,6 +11,7 @@ import com.example.account_service.utils.CookieUtil;
 import com.example.account_service.utils.UrlBuilder;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -18,11 +19,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Controller
@@ -45,19 +49,23 @@ public class AccountController {
 
     @GetMapping("register")
     public String showRegister(
-        @RequestParam(required = false) String redirect,
+        @RequestParam(required = false, defaultValue = "") String redirect,
         Model model
     ) {
+        model.addAttribute("errors", new HashMap<>());
         model.addAttribute("user", new RegisterUserRequest());
-        model.addAttribute("redirect", redirect.isEmpty() ? topPageUrl : redirect);
+        model.addAttribute("redirect", urlBuilder.encode(redirect.isEmpty()
+            ? topPageUrl
+            : redirect
+        ));
         return "register";
     }
 
     @PostMapping("register")
     public String register(
-        @RequestParam(required = false) String redirect,
-        @ModelAttribute("user") RegisterUserRequest body,
-        BindingResult bind
+        @ModelAttribute("redirect") String redirect,
+        @Valid @ModelAttribute("user") RegisterUserRequest body,
+        Model model
     ) throws UnhandledException {
         try {
             authServiceAPI.register(body);
@@ -65,7 +73,7 @@ public class AccountController {
                 "redirect", redirect.isEmpty() ? topPageUrl : redirect)
             );
         } catch (InvalidParametersException apiErr) {
-            apiErr.getResponse().getErrors().forEach((f, m) -> bind.rejectValue(f, "", m));
+            model.addAttribute("errors", apiErr.getResponse().getErrors());
             return "register";
         } catch (Exception exception) {
             throw new UnhandledException(HttpStatus.INTERNAL_SERVER_ERROR, "Registration failure");
@@ -74,19 +82,23 @@ public class AccountController {
 
     @GetMapping("login")
     public String showLogin(
-        @RequestParam(required = false) String redirect,
+        @RequestParam(required = false, defaultValue = "") String redirect,
         Model model
     ) {
+        model.addAttribute("errors", new HashMap<>());
         model.addAttribute("user", new BasicAuthRequest());
-        model.addAttribute("redirect", redirect.isEmpty() ? topPageUrl : redirect);
+        model.addAttribute("redirect", urlBuilder.encode(redirect.isEmpty()
+            ? topPageUrl
+            : redirect
+        ));
         return "login";
     }
 
     @PostMapping("login")
     public String login(
-        @RequestParam(required = false) String redirect,
+        @ModelAttribute("redirect") String redirect,
         @ModelAttribute("user") BasicAuthRequest body,
-        BindingResult bind,
+        Model model,
         HttpServletResponse response
     ) throws UnhandledException {
         try {
@@ -97,19 +109,14 @@ public class AccountController {
             cookie.addCookie(response, "accessToken", apiResponse.getAccessToken());
             return "redirect:" + (redirect.isEmpty() ? topPageUrl : redirect);
         } catch (BadCredentialsException apiErr) {
-            bind.reject("Incorrect username and password");
+            model.addAttribute("errors", Map.of("global", new String[]{ "Incorrect username and password" }));
             return "login";
         } catch (InvalidParametersException apiErr) {
-            apiErr.getResponse().getErrors().forEach((f, m) -> bind.rejectValue(f, "", m));
+            model.addAttribute("errors", apiErr.getResponse().getErrors());
             return "login";
         } catch (Exception exception) {
             throw new UnhandledException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to login");
         }
-    }
-
-    @GetMapping("home")
-    public ResponseEntity<?> home(HttpServletRequest request) {
-        return ResponseEntity.ok(cookie.getCookie(request, "accessToken"));
     }
 
     @PostMapping("logout")

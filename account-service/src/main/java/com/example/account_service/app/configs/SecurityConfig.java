@@ -12,7 +12,6 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private static final String[] WHITE_LIST = {
-        "/home",
         "/error",
         "/login",
         "/logout",

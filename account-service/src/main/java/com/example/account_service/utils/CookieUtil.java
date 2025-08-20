@@ -12,7 +12,7 @@ import java.util.Optional;
 @Component
 public class CookieUtil {
 
-    @Value("server.cookie.max-age-seconds")
+    @Value("${server.cookie.max-age-seconds}")
     private Integer maxAgeSeconds;
 
     public void addCookie(HttpServletResponse response, String name, String value) {

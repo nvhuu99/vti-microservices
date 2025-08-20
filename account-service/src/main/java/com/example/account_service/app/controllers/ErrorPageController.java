@@ -10,12 +10,20 @@ public class ErrorPageController {
 
     @GetMapping("error")
     public String error(
-        @RequestParam Integer statusCode,
-        @RequestParam String errorMessage,
+        @RequestParam(required = false, defaultValue = "500") Integer statusCode,
+        @RequestParam(required = false, defaultValue = "") String errorMessage,
         Model model
     ) {
+        var defaultMessage = switch (statusCode) {
+            case 400 -> "Bad request";
+            case 401 -> "Unauthorized";
+            case 403 -> "Forbidden";
+            case 404 -> "Resource not found";
+            case 500 -> "Internal server error";
+            default -> "Unexpected error";
+        };
         model.addAttribute("statusCode", statusCode);
-        model.addAttribute("errorMessage", errorMessage);
+        model.addAttribute("errorMessage", errorMessage.isEmpty() ? defaultMessage : errorMessage);
         return "error";
     }
 }

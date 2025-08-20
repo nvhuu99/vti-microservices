@@ -34,11 +34,10 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
     ) throws IOException {
 
         var userInfo = userInfoFactory.create(authentication);
-        User user = userRepo.findByEmail(userInfo.getEmail()).orElseGet(() -> {
+        User user = userRepo.findByUsername(userInfo.getLoginId()).orElseGet(() -> {
             var newUser = new User();
             newUser.setEmail(userInfo.getEmail());
-            newUser.setUsername(userInfo.getEmail());
-            newUser.getRoles().add("ROLE_USER");
+            newUser.setUsername(userInfo.getLoginId());
             return userRepo.save(newUser);
         });
 

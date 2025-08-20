@@ -21,7 +21,7 @@ public class User {
     @Column(nullable = false, unique = true)
     String username;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     String email;
 
     String password;

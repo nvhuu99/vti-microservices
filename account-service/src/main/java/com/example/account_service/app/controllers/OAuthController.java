@@ -21,6 +21,9 @@ public class OAuthController {
     @Autowired
     private UrlBuilder urlBuilder;
 
+    @Autowired
+    private CookieUtil cookieUtil;
+
     @Value("${auth-service.url}")
     private String authServiceUrl;
 
@@ -36,7 +39,7 @@ public class OAuthController {
             authServiceUrl, "oauth2/authorization/" + registrationId,
             Map.of(
                 "authorizedRedirect", urlBuilder.build("oauth2/authorized", null),
-                "redirect", urlBuilder.build(redirect, null)
+                "redirect", redirect
             )
         );
         return "redirect:" + authServiceOauth2Endpoint;
@@ -51,7 +54,7 @@ public class OAuthController {
         HttpServletResponse response
     ) throws NotFoundException {
         userService.setAuthTokens(username, accessToken, refreshToken);
-        CookieUtil.addCookie(response, "accessToken", accessToken);
+        cookieUtil.addCookie(response, "accessToken", accessToken);
         return "redirect:" + redirect;
     }
 }

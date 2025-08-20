@@ -1,6 +1,6 @@
 spring:
   config:
-    import: optional:classpath:.env.docker.localhost[.properties]
+    import: optional:classpath:.env.localhost[.properties]
 
   application:
     name: ${SPRING_APP_NAME}
@@ -31,6 +31,10 @@ spring:
           google:
             clientId: ${GOOGLE_OAUTH2_CLIENT_ID}
             clientSecret: ${GOOGLE_OAUTH2_SECRET}
+          github:
+            client-id: ${GITHUB_OAUTH2_CLIENT_ID}
+            client-secret: ${GITHUB_OAUTH2_SECRET}
+            scope: read:user, user:email
 
 server:
   port: ${SERVER_PORT}

@@ -11,11 +11,15 @@ spring:
     password: admin@1234
 
   jpa:
+    generate-ddl: true
     hibernate:
       ddl-auto: update      # Only Schema Service should be able to update the database schemas
-    generate-ddl: true
+
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
 
   cloud:
     config:
       enabled: false
-

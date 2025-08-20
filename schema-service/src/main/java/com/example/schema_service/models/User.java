@@ -17,6 +17,7 @@ import java.util.Set;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
@@ -24,7 +25,7 @@ public class User {
     @Column(nullable = false, unique = true)
     String username;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     String email;
 
     String password;
