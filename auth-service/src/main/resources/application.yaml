@@ -5,8 +5,8 @@ spring:
   application:
     name: ${SPRING_APP_NAME}
     token-service:
-      access-token-exp-ms: ${ACCESS_TOKEN_EXPIRE_MS}
-      refresh-token-exp-ms: ${REFRESH_TOKEN_EXPIRE_MS}
+      access-token-exp-ms: 1000
+      refresh-token-exp-ms: 2592000000
       jwt:
         secret: ${TOKEN_SECRET}
 
@@ -29,11 +29,13 @@ spring:
       client:
         registration:
           google:
-            clientId: ${GOOGLE_OAUTH2_CLIENT_ID}
-            clientSecret: ${GOOGLE_OAUTH2_SECRET}
+            client-id: ${GOOGLE_OAUTH2_CLIENT_ID}
+            client-secret: ${GOOGLE_OAUTH2_SECRET}
+            redirect-uri: http://${API_GATEWAY_SERVICE_HOST}:${API_GATEWAY_SERVICE_PORT}/login/oauth2/code/google
           github:
             client-id: ${GITHUB_OAUTH2_CLIENT_ID}
             client-secret: ${GITHUB_OAUTH2_SECRET}
+            redirect-uri: http://${API_GATEWAY_SERVICE_HOST}:${API_GATEWAY_SERVICE_PORT}/login/oauth2/code/github
             scope: read:user, user:email
 
 server:

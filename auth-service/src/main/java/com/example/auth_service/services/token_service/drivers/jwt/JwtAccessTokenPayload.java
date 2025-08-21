@@ -5,14 +5,14 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 
 public class JwtAccessTokenPayload implements AccessTokenPayload {
-    private final Jws<Claims> claims;
+    private final Claims claims;
 
-    public JwtAccessTokenPayload(Jws<Claims> claims) {
+    public JwtAccessTokenPayload(Claims claims) {
         this.claims = claims;
     }
 
     @Override
     public String getSubject() {
-        return claims.getBody().getSubject();
+        return claims.getSubject();
     }
 }

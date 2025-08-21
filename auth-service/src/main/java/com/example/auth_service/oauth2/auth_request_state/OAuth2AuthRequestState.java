@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.NoArgsConstructor;
 
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -17,8 +18,16 @@ public class OAuth2AuthRequestState {
     private Map<String, String[]> state = new HashMap<>();
 
     public OAuth2AuthRequestState(HttpServletRequest request) {
-        var parameters = request.getParameterMap();
-        state.putAll(parameters);
+        var queries = new HashMap<String, String[]>();
+        for (var entry : request.getParameterMap().entrySet()) {
+            var values = entry.getValue();
+            var decodedValues = new String[values.length];
+            for (int i = 0; i < values.length; i++) {
+                decodedValues[i] = URLDecoder.decode(values[i], StandardCharsets.UTF_8);
+            }
+            queries.put(entry.getKey(), decodedValues);
+        }
+        state = queries;
     }
 
     public String get(String key) {

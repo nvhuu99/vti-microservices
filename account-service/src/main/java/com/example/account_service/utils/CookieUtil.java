@@ -15,7 +15,7 @@ public class CookieUtil {
     @Value("${server.cookie.max-age-seconds}")
     private Integer maxAgeSeconds;
 
-    public void addCookie(HttpServletResponse response, String name, String value) {
+    public void set(HttpServletResponse response, String name, String value) {
         Cookie cookie = new Cookie(name, value);
         cookie.setHttpOnly(true);
         cookie.setSecure(false);
@@ -24,7 +24,7 @@ public class CookieUtil {
         response.addCookie(cookie);
     }
 
-    public Optional<Cookie> getCookie(HttpServletRequest request, String name) {
+    public Optional<Cookie> get(HttpServletRequest request, String name) {
         if (request.getCookies() != null) {
             return Arrays.stream(request.getCookies())
                 .filter(c -> name.equals(c.getName()))
@@ -33,7 +33,7 @@ public class CookieUtil {
         return Optional.empty();
     }
 
-    public void deleteCookie(HttpServletResponse response, String name) {
+    public void delete(HttpServletResponse response, String name) {
         Cookie cookie = new Cookie(name, null);
         cookie.setPath("/");
         cookie.setHttpOnly(true);

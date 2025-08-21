@@ -17,30 +17,34 @@ public class ApiResponse {
     protected Object errors;
 
     public static ResponseEntity<ApiResponse> ok(Object data) {
-        return ResponseEntity.ok(new ApiResponse(HttpStatus.OK.value(), true, "", data, null));
+        return ResponseEntity.ok(new ApiResponse(200, true, "", data, null));
     }
 
     public static ResponseEntity<ApiResponse> created(Object data) {
-        return new ResponseEntity<>(new ApiResponse(HttpStatus.CREATED.value(), true, "", data, null), HttpStatus.CREATED);
+        return new ResponseEntity<>(new ApiResponse(201, true, "", data, null), HttpStatus.valueOf(201));
     }
 
     public static ResponseEntity<ApiResponse> noContent() {
-        return new ResponseEntity<>(new ApiResponse(HttpStatus.NO_CONTENT.value(), true, "", null, null), HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(new ApiResponse(204, true, "", null, null), HttpStatus.valueOf(204));
     }
 
     public static ResponseEntity<ApiResponse> unAuthorized() {
-        return new ResponseEntity<>(new ApiResponse(HttpStatus.UNAUTHORIZED.value(), false, null, null, null), HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(new ApiResponse(401, false, null, null, null), HttpStatus.valueOf(401));
+    }
+
+    public static ResponseEntity<ApiResponse> expired() {
+        return new ResponseEntity<>(new ApiResponse(419, false, null, null, null), HttpStatus.valueOf(419));
     }
 
     public static ResponseEntity<ApiResponse> notFound(String message) {
-        return new ResponseEntity<>(new ApiResponse(HttpStatus.NOT_FOUND.value(), false, message, null, null), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(new ApiResponse(404, false, message, null, null), HttpStatus.valueOf(404));
     }
 
     public static ResponseEntity<ApiResponse> badRequest(String message, Object errors) {
-        return new ResponseEntity<>(new ApiResponse(HttpStatus.BAD_REQUEST.value(), false, message, null, errors), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new ApiResponse(400, false, message, null, errors), HttpStatus.valueOf(400));
     }
 
     public static ResponseEntity<ApiResponse> internalServerError(String message) {
-        return new ResponseEntity<>(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), false, message, null, null), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new ApiResponse(500, false, message, null, null), HttpStatus.valueOf(500));
     }
 }

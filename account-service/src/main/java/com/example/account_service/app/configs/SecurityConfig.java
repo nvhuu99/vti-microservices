@@ -12,10 +12,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private static final String[] WHITE_LIST = {
-        "/error",
-        "/login",
-        "/logout",
-        "/register",
+        "/account/**",
         "/oauth2/**",
         "/css/**",
         "/js/**"

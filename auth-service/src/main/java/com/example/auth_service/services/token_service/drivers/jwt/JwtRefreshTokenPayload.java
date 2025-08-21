@@ -7,19 +7,19 @@ import io.jsonwebtoken.Jws;
 import java.util.Objects;
 
 public class JwtRefreshTokenPayload implements RefreshTokenPayload {
-    private final Jws<Claims> claims;
+    private final Claims claims;
 
-    public JwtRefreshTokenPayload(Jws<Claims> claims) {
+    public JwtRefreshTokenPayload(Claims claims) {
         this.claims = claims;
     }
 
     @Override
     public String getSubject() {
-        return claims.getBody().getSubject();
+        return claims.getSubject();
     }
 
     @Override
-    public String getTokenType() { return claims.getBody().get("token_type", String.class); }
+    public String getTokenType() { return claims.get("token_type", String.class); }
 
     @Override
     public Boolean verifyTokenType() {

@@ -13,27 +13,19 @@ import java.util.StringJoiner;
 @Component
 public class UrlBuilder {
 
-    @Value("${server.host}")
-    private String host;
-
-    @Value("${server.port}")
-    private String port;
-
-    @Value("${server.scheme}")
-    private String scheme;
+    @Value("${api-gateway.url}")
+    private String baseUrl;
 
     private final Charset charset = StandardCharsets.UTF_8;
 
     public String build(String path, Map<String, Object> queries) {
-        String base = scheme + "://" + host + ":" + port;
-        return buildAbs(base, path, queries);
+        return buildAbs(baseUrl, path, queries);
     }
 
     public String buildAbs(String base, String path, Map<String, Object> queries) {
         var url = base + "/" + path;
         if (queries != null) {
             var joiner = new StringJoiner("&");
-            var charset = StandardCharsets.UTF_8;
             var mapper = new ObjectMapper();
             for (var entry : queries.entrySet()) {
                 try {
@@ -47,7 +39,7 @@ public class UrlBuilder {
                 } catch (Exception ignored) {
                 }
             }
-            url += "?" + joiner.toString();
+            url += "?" + joiner;
         }
         return url;
     }

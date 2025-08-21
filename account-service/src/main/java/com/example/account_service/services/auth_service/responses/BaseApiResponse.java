@@ -1,5 +1,6 @@
 package com.example.account_service.services.auth_service.responses;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +17,10 @@ public class BaseApiResponse {
     protected String message;
     protected Object data;
     protected Map<String, String> errors = new HashMap<>();
+
+    public static BaseApiResponse fromJson(String json) throws Exception {
+        return new ObjectMapper().readValue(json, BaseApiResponse.class);
+    }
 
     public Map<String, String> getErrors() {
         if (errors != null) {

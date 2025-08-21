@@ -36,4 +36,4 @@ auth-service:
 
 api-gateway:
   url: http://${API_GATEWAY_SERVICE_HOST}:${API_GATEWAY_SERVICE_PORT}
-  top-page: top
+  top-page: admin/top

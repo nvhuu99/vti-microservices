@@ -62,7 +62,7 @@ public class AuthController {
         } catch (TokenRejectedException ex) {
             return ApiResponse.unAuthorized();
         } catch (TokenExpiredException ex) {
-            return ApiResponse.badRequest("Token expired", null);
+            return ApiResponse.expired();
         }  catch (Exception ex) {
             return ApiResponse.badRequest("Invalid token", null);
         }
@@ -83,7 +83,7 @@ public class AuthController {
         } catch (TokenRejectedException ex) {
             return ApiResponse.unAuthorized();
         } catch (TokenExpiredException ex) {
-            return ApiResponse.badRequest("Token expired", null);
+            return ApiResponse.expired();
         }  catch (Exception ex) {
             return ApiResponse.badRequest("Invalid token", null);
         }

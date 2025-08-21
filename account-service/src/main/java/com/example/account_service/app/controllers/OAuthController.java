@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @Controller
+@RequestMapping("account")
 public class OAuthController {
 
     @Autowired
@@ -35,13 +36,10 @@ public class OAuthController {
         @PathVariable String registrationId,
         @RequestParam String redirect
     ) throws UnhandledException {
-        var authServiceOauth2Endpoint = urlBuilder.buildAbs(
-            authServiceUrl, "oauth2/authorization/" + registrationId,
-            Map.of(
-                "authorizedRedirect", urlBuilder.build("oauth2/authorized", null),
-                "redirect", redirect
-            )
-        );
+        var authServiceOauth2Endpoint = urlBuilder.build("oauth2/authorization/" + registrationId, Map.of(
+            "authorizedRedirect", urlBuilder.build("account/oauth2/authorized", null),
+            "redirect", redirect
+        ));
         return "redirect:" + authServiceOauth2Endpoint;
     }
 
@@ -54,7 +52,7 @@ public class OAuthController {
         HttpServletResponse response
     ) throws NotFoundException {
         userService.setAuthTokens(username, accessToken, refreshToken);
-        cookieUtil.addCookie(response, "accessToken", accessToken);
+        cookieUtil.set(response, "accessToken", accessToken);
         return "redirect:" + redirect;
     }
 }

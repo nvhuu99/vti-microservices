@@ -1,6 +1,9 @@
 package com.example.account_service.app.controllers;
 
 import com.example.account_service.app.exceptions.UnhandledException;
+import com.example.account_service.app.view_models.LoginFormAttributes;
+import com.example.account_service.app.view_models.RegistrationFormAttributes;
+import com.example.account_service.app.view_models.ViewModelBuilder;
 import com.example.account_service.services.auth_service.AuthServiceClient;
 import com.example.account_service.services.auth_service.exceptions.BadCredentialsException;
 import com.example.account_service.services.auth_service.exceptions.InvalidParametersException;
@@ -15,21 +18,15 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Controller
+@RequestMapping("account")
 public class AccountController {
 
     @Autowired
@@ -42,7 +39,10 @@ public class AccountController {
     private UrlBuilder urlBuilder;
 
     @Autowired
-    private CookieUtil cookie;
+    private CookieUtil cookieUtil;
+
+    @Autowired
+    private ViewModelBuilder viewBuilder;
 
     @Value("${api-gateway.url}/${api-gateway.top-page}")
     private String topPageUrl;
@@ -54,7 +54,7 @@ public class AccountController {
     ) {
         model.addAttribute("errors", new HashMap<>());
         model.addAttribute("user", new RegisterUserRequest());
-        model.addAttribute("redirect", urlBuilder.encode(redirect.isEmpty()
+        model.addAttribute("form", viewBuilder.buildRegistrationForm(redirect.isEmpty()
             ? topPageUrl
             : redirect
         ));
@@ -63,15 +63,13 @@ public class AccountController {
 
     @PostMapping("register")
     public String register(
-        @ModelAttribute("redirect") String redirect,
+        @ModelAttribute("form") RegistrationFormAttributes formAttrs,
         @Valid @ModelAttribute("user") RegisterUserRequest body,
         Model model
     ) throws UnhandledException {
         try {
             authServiceAPI.register(body);
-            return "redirect:" + urlBuilder.build("login", Map.of(
-                "redirect", redirect.isEmpty() ? topPageUrl : redirect)
-            );
+            return "redirect:" + formAttrs.loginUrl();
         } catch (InvalidParametersException apiErr) {
             model.addAttribute("errors", apiErr.getResponse().getErrors());
             return "register";
@@ -87,7 +85,7 @@ public class AccountController {
     ) {
         model.addAttribute("errors", new HashMap<>());
         model.addAttribute("user", new BasicAuthRequest());
-        model.addAttribute("redirect", urlBuilder.encode(redirect.isEmpty()
+        model.addAttribute("form", viewBuilder.buildLoginForm(redirect.isEmpty()
             ? topPageUrl
             : redirect
         ));
@@ -96,7 +94,7 @@ public class AccountController {
 
     @PostMapping("login")
     public String login(
-        @ModelAttribute("redirect") String redirect,
+        @ModelAttribute("form") LoginFormAttributes formAttrs,
         @ModelAttribute("user") BasicAuthRequest body,
         Model model,
         HttpServletResponse response
@@ -104,10 +102,10 @@ public class AccountController {
         try {
             var apiResponse = authServiceAPI.authenticate(body);
             var accessToken = apiResponse.getAccessToken();
-            var refreshToken = apiResponse.getAccessToken();
+            var refreshToken = apiResponse.getRefreshToken();
             userService.setAuthTokens(body.getUsername(), accessToken, refreshToken);
-            cookie.addCookie(response, "accessToken", apiResponse.getAccessToken());
-            return "redirect:" + (redirect.isEmpty() ? topPageUrl : redirect);
+            cookieUtil.set(response, "accessToken", accessToken);
+            return "redirect:" + formAttrs.redirect();
         } catch (BadCredentialsException apiErr) {
             model.addAttribute("errors", Map.of("global", new String[]{ "Incorrect username and password" }));
             return "login";
@@ -122,7 +120,7 @@ public class AccountController {
     @PostMapping("logout")
     public String logout(HttpServletRequest request) throws UnhandledException {
         try {
-            var accessToken = cookie.getCookie(request, "accessToken");
+            var accessToken = cookieUtil.get(request, "accessToken");
             userService.unsetAuthTokens(accessToken.toString());
             return "redirect:" + urlBuilder.build("login", Map.of("redirect", topPageUrl));
         } catch (Exception exception) {

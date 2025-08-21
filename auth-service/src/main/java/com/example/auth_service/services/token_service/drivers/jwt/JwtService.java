@@ -48,7 +48,7 @@ public class JwtService implements TokenService {
 
     @Override
     public AccessTokenPayload verifyAccessToken(String accessToken) throws InvalidTokenException, TokenExpiredException, TokenRejectedException {
-        var claims = parseJwt(accessToken);
+        var claims = parseJwt(accessToken, true);
         return new JwtAccessTokenPayload(claims);
     }
 
@@ -57,8 +57,8 @@ public class JwtService implements TokenService {
         String accessToken,
         String refreshToken
     ) throws InvalidTokenException, TokenExpiredException, TokenRejectedException {
-        var accessTokenPayload = new JwtRefreshTokenPayload(parseJwt(accessToken));
-        var refreshTokenPayload = new JwtRefreshTokenPayload(parseJwt(refreshToken));
+        var accessTokenPayload = new JwtRefreshTokenPayload(parseJwt(accessToken, false));
+        var refreshTokenPayload = new JwtRefreshTokenPayload(parseJwt(refreshToken, true));
         // Token type is not "refresh_token"
         if (! refreshTokenPayload.verifyTokenType()) {
             throw new InvalidTokenException();
@@ -70,11 +70,18 @@ public class JwtService implements TokenService {
         return refreshTokenPayload;
     }
 
-    private Jws<Claims> parseJwt(String token) throws InvalidTokenException, TokenExpiredException, TokenRejectedException {
+    private Claims parseJwt(String token, Boolean mustNotExpired) throws InvalidTokenException, TokenExpiredException, TokenRejectedException {
         try {
-            return Jwts.parserBuilder().setSigningKey(secret().getBytes()).build().parseClaimsJws(token);
+            return Jwts.parserBuilder()
+                .setSigningKey(secret().getBytes())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
         } catch (ExpiredJwtException ex) {
-            throw new TokenExpiredException();
+            if (mustNotExpired) {
+                throw new TokenExpiredException();
+            }
+            return ex.getClaims();
         } catch (SignatureException ex) {
             throw new TokenRejectedException();
         } catch (Exception ex) {

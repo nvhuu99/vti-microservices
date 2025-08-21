@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Response;
 import lombok.Getter;
 
+import java.nio.charset.StandardCharsets;
+
 @Getter
 public class ApiResponseException extends RuntimeException {
 
@@ -16,21 +18,14 @@ public class ApiResponseException extends RuntimeException {
     }
 
     public static ApiResponseException mapException(Response response) throws Exception {
-        var res = new ObjectMapper().readValue(response.body().asInputStream(), BaseApiResponse.class);
-
-        if (response.status() == 401) {
-            return new TokenRejectedException(res);
+        var body = new String(response.body().asInputStream().readAllBytes(), StandardCharsets.UTF_8);
+        var apiResponse = BaseApiResponse.fromJson(body);
+        if (response.status() == 400 && !apiResponse.getMessage().isEmpty()) {
+            if (apiResponse.getMessage().equals("Bad credentials")) {
+                return new BadCredentialsException(apiResponse);
+            }
+            return new InvalidParametersException(apiResponse);
         }
-
-        if (response.status() == 400 && !res.getMessage().isEmpty()) {
-            return switch (res.getMessage()) {
-                case "Bad credentials" -> new BadCredentialsException(res);
-                case "Invalid token" -> new TokenExpiredException(res);
-                case "Token expired" -> new TokenRejectedException(res);
-                default -> new InvalidParametersException(res);
-            };
-        }
-
-        return new ApiResponseException(res);
+        return new ApiResponseException(apiResponse);
     }
 }

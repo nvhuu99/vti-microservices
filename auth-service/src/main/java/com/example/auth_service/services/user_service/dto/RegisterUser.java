@@ -1,5 +1,7 @@
 package com.example.auth_service.services.user_service.dto;
 
+import com.example.auth_service.api.configs.EmptyToNullStringDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -20,6 +22,7 @@ public class RegisterUser {
 
     @Email(message = "Invalid email address")
     @Length(min = 3, max = 255, message = "Email must be between 3 - 255 characters")
+    @JsonDeserialize(using = EmptyToNullStringDeserializer.class)
     String email;
 
     @NotNull(message = "Password is required")
