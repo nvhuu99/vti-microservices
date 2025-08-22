@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -40,7 +41,7 @@ public class TokenAuthorizationFilter implements GatewayFilter {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        String accessToken = cookieUtil.get(exchange, "accessToken");
+        var accessToken = extractAccessToken(exchange, exchange.getRequest());
         if (accessToken.isEmpty()) {
             return redirectToLogin(exchange);
         }
@@ -52,6 +53,20 @@ public class TokenAuthorizationFilter implements GatewayFilter {
         } catch (ApiResponseException ex) {
             return redirectToLogin(exchange);
         }
+    }
+
+    private String extractAccessToken(ServerWebExchange exchange, ServerHttpRequest request) {
+        String accessToken = cookieUtil.get(exchange, "accessToken");
+        if (! accessToken.isEmpty()) {
+            return accessToken;
+        }
+
+        String authHeader = request.getHeaders().getFirst("Authorization");
+        if (authHeader.startsWith("Bearer ")) {
+            return authHeader.substring(7);
+        }
+
+        return "";
     }
 
     private Mono<Void> refreshToken(ServerWebExchange exchange, GatewayFilterChain chain, String accessToken) {

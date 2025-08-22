@@ -36,8 +36,6 @@ public class RouteConfig {
             )
             .uri("lb://auth-service")
         );
-
-
         /*
         Admin Pages
         */
@@ -50,7 +48,10 @@ public class RouteConfig {
         Department Service API Endpoints
         */
         routes.route("api-department", r -> r
-            .path("/api/v1/departments/**")
+            .path(
+                "/api/v1/departments/**",
+                "/api/v1/employees/**"
+            )
             .filters(f -> f.filter(tokenAuthorizationFilter))
             .uri("lb://department-service")
         );

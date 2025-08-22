@@ -5,7 +5,7 @@ spring:
   application:
     name: ${SPRING_APP_NAME}
     token-service:
-      access-token-exp-ms: 1000
+      access-token-exp-ms: 86400000
       refresh-token-exp-ms: 2592000000
       jwt:
         secret: ${TOKEN_SECRET}
