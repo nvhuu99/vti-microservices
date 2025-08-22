@@ -1,5 +1,6 @@
 package com.example.account_service.services.user_service.drivers;
 
+import com.example.account_service.models.User;
 import com.example.account_service.repositories.UserRepository;
 import com.example.account_service.services.user_service.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,8 +9,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UserService implements com.example.account_service.services.user_service.UserService {
+
     @Autowired
     private UserRepository repo;
+
+    @Override
+    public User findById(Long id) { return repo.findById(id).orElse(null); }
 
     @Override
     public void setAuthTokens(String username, String accessToken, String refreshToken) throws NotFoundException {

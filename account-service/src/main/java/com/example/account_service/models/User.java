@@ -27,6 +27,8 @@ public class User {
     @Column(unique = true)
     String email;
 
+    String profileImageUrl;
+
     String password;
 
     String accessToken;

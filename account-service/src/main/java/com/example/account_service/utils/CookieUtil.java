@@ -24,13 +24,16 @@ public class CookieUtil {
         response.addCookie(cookie);
     }
 
-    public Optional<Cookie> get(HttpServletRequest request, String name) {
-        if (request.getCookies() != null) {
+    public String get(HttpServletRequest request, String name) {
+        try {
             return Arrays.stream(request.getCookies())
                 .filter(c -> name.equals(c.getName()))
-                .findFirst();
+                .findFirst()
+                .get()
+                .getValue();
+        } catch (Exception ignored) {
+            return "";
         }
-        return Optional.empty();
     }
 
     public void delete(HttpServletResponse response, String name) {

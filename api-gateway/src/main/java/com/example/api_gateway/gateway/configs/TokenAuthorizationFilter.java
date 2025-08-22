@@ -62,7 +62,7 @@ public class TokenAuthorizationFilter implements GatewayFilter {
         }
 
         String authHeader = request.getHeaders().getFirst("Authorization");
-        if (authHeader.startsWith("Bearer ")) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
             return authHeader.substring(7);
         }
 
@@ -89,6 +89,11 @@ public class TokenAuthorizationFilter implements GatewayFilter {
     }
 
     private Mono<Void> redirectToLogin(ServerWebExchange exchange) {
+        String path = exchange.getRequest().getURI().getPath();
+        if (path.startsWith("/api")) {
+            exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+            return exchange.getResponse().setComplete();
+        }
         cookieUtil.delete(exchange, "accessToken");
         return redirectTo(exchange, urlBuilder.build("account/login", Map.of(
             "redirect", exchange.getRequest().getURI().toString())

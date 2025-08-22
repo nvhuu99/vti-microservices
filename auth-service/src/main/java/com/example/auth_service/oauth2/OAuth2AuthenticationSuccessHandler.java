@@ -38,6 +38,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
             var newUser = new User();
             newUser.setEmail(userInfo.getEmail());
             newUser.setUsername(userInfo.getLoginId());
+            newUser.setProfileImageUrl(userInfo.getImageUrl());
             return userRepo.save(newUser);
         });
 

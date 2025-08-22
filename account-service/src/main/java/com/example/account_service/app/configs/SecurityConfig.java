@@ -14,6 +14,7 @@ public class SecurityConfig {
     private static final String[] WHITE_LIST = {
         "/account/**",
         "/oauth2/**",
+        "/api/v1/accounts/**",
         "/css/**",
         "/js/**"
     };
@@ -21,7 +22,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(Customizer.withDefaults())
+            .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(WHITE_LIST).permitAll()

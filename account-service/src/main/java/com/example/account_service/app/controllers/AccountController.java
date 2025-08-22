@@ -117,12 +117,18 @@ public class AccountController {
         }
     }
 
-    @PostMapping("logout")
+    @GetMapping("logout")
     public String logout(HttpServletRequest request) throws UnhandledException {
         try {
             var accessToken = cookieUtil.get(request, "accessToken");
-            userService.unsetAuthTokens(accessToken.toString());
-            return "redirect:" + urlBuilder.build("login", Map.of("redirect", topPageUrl));
+            if (accessToken.isEmpty()) {
+                var header = request.getHeader("Authorization");
+                if (header != null && header.startsWith("Bearer ")) {
+                    accessToken = header.substring(7);
+                }
+            }
+            userService.unsetAuthTokens(accessToken);
+            return "redirect:" + urlBuilder.build("account/login", Map.of("redirect", topPageUrl));
         } catch (Exception exception) {
             throw new UnhandledException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to logout");
         }

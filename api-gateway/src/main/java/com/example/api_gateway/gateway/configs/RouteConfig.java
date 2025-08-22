@@ -16,21 +16,23 @@ public class RouteConfig {
     public RouteLocator routes(RouteLocatorBuilder builder) {
         var routes = builder.routes();
         /*
-        Account Service Pages
+        Account Service Pages & APIs
         */
         routes.route("app-account", r -> r
             .path("/account/**")
             .uri("lb://account-service")
         );
+        routes.route("api-account", r -> r
+            .path("/api/v1/accounts/**")
+            .filters(f -> f.filter(tokenAuthorizationFilter))
+            .uri("lb://account-service")
+        );
         /*
          Auth Service API Endpoints
         */
-        routes.route("api-auth", r -> r
-            .path("/api/v1/auth/**")
-            .uri("lb://auth-service")
-        );
         routes.route("api-auth-oauth2", r -> r
             .path(
+                "/api/v1/auth/**",
                 "/oauth2/**",
                 "/login/oauth2/**"
             )
