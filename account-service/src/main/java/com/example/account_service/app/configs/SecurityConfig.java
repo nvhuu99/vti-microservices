@@ -15,6 +15,7 @@ public class SecurityConfig {
         "/account/**",
         "/oauth2/**",
         "/api/v1/accounts/**",
+        "/actuator/**",
         "/css/**",
         "/js/**"
     };

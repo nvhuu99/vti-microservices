@@ -38,3 +38,9 @@ auth-service:
 api-gateway:
   url: http://${API_GATEWAY_SERVICE_HOST}:${API_GATEWAY_SERVICE_PORT}
   top-page: admin/top
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: [ "health", "info", "prometheus" ]
