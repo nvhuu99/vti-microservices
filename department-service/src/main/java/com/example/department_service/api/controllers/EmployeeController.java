@@ -6,10 +6,8 @@ import com.example.department_service.services.employee_service.dto.EmployeeDeta
 import com.example.department_service.services.employee_service.dto.SaveEmployee;
 import com.example.department_service.services.exceptions.NotFoundException;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;

@@ -1,7 +1,8 @@
 package com.example.auth_service.api.configs;
 
-import com.example.auth_service.oauth2.OAuth2AuthenticationFailureHandler;
-import com.example.auth_service.oauth2.OAuth2AuthenticationSuccessHandler;
+import com.example.auth_service.oauth2.OAuth2AuthRequestCookieRepository;
+import com.example.auth_service.oauth2.OAuth2HandleAuthFailure;
+import com.example.auth_service.oauth2.OAuth2HandleAuthSuccess;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,23 +22,22 @@ public class SecurityConfig {
     };
 
     @Autowired
-    private OAuth2AuthenticationSuccessHandler oauth2SuccessHandler;
+    private OAuth2HandleAuthSuccess oauth2SuccessHandler;
 
     @Autowired
-    private OAuth2AuthenticationFailureHandler oauth2FailureHandler;
+    private OAuth2HandleAuthFailure oauth2FailureHandler;
 
     @Autowired
     private OAuth2AuthorizationRequestResolver oauth2AuthorizationRequestResolver;
 
+    @Autowired
+    OAuth2AuthRequestCookieRepository oauth2AuthRequestCookieRepository;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(
-                AbstractHttpConfigurer::disable
-            )
-            .sessionManagement(
-                session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
+            .csrf(AbstractHttpConfigurer::disable)
+            .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(WHITE_LIST).permitAll()
                 .anyRequest().denyAll()
@@ -46,8 +46,9 @@ public class SecurityConfig {
                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
             )
             .oauth2Login(oauth2 -> oauth2
-                .authorizationEndpoint(authorization ->
-                    authorization.authorizationRequestResolver(oauth2AuthorizationRequestResolver)
+                .authorizationEndpoint(authorization -> authorization
+                    .authorizationRequestResolver(oauth2AuthorizationRequestResolver)
+                    .authorizationRequestRepository(oauth2AuthRequestCookieRepository)
                 )
                 .successHandler(oauth2SuccessHandler)
                 .failureHandler(oauth2FailureHandler)

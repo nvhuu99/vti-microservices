@@ -7,7 +7,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 @Configuration
 public class OAuth2Configuration {
     @Bean
-    public OAuth2AuthorizationRequestResolver customAuthorizationRequestResolver(ClientRegistrationRepository repo) {
-        return new OAuth2AuthorizationRequestResolver(repo, "/oauth2/authorization");
+    public OAuth2AuthRequestCustomizer customAuthorizationRequestResolver(ClientRegistrationRepository repo) {
+        return new OAuth2AuthRequestCustomizer(repo, "/oauth2/authorization");
     }
 }

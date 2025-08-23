@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 @Component
-public class OAuth2AuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
+public class OAuth2HandleAuthFailure extends SimpleUrlAuthenticationFailureHandler {
 
     @Override
     public void onAuthenticationFailure(

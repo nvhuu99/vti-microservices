@@ -1,13 +1,11 @@
 package com.example.auth_service.oauth2;
 
-import com.example.auth_service.api.responses.AuthenticateSuccessResponse;
 import com.example.auth_service.models.User;
 import com.example.auth_service.oauth2.auth_request_state.OAuth2AuthRequestState;
 import com.example.auth_service.oauth2.user_info.OAuth2UserInfoFactory;
 import com.example.auth_service.repositories.UserRepository;
 import com.example.auth_service.services.token_service.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -15,7 +13,7 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 
 @Component
-public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+public class OAuth2HandleAuthSuccess implements AuthenticationSuccessHandler {
 
     @Autowired
     private TokenService tokenService;

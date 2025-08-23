@@ -1,11 +1,9 @@
 package com.example.department_service.services.employee_service.dto;
 
-import com.demo.models.Course;
+
 import com.example.department_service.models.Employee;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.experimental.FieldDefaults;
 
 @Data
 @AllArgsConstructor

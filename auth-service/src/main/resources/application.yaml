@@ -1,6 +1,6 @@
 spring:
   config:
-    import: optional:classpath:.env.localhost[.properties]
+    import: optional:classpath:.env.docker[.properties]
 
   application:
     name: ${SPRING_APP_NAME}
@@ -40,8 +40,12 @@ spring:
 
 server:
   port: ${SERVER_PORT}
+  forward-headers-strategy: framework
 
 eureka:
   client:
     serviceUrl:
       defaultZone: "http://${EUREKA_SERVER_HOST}:${EUREKA_SERVER_PORT}/eureka/"
+
+api-gateway:
+  host: ${API_GATEWAY_SERVICE_HOST}

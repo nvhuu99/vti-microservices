@@ -1,6 +1,6 @@
 spring:
   config:
-    import: optional:classpath:.env.localhost[.properties]
+    import: optional:classpath:.env.docker[.properties]
 
   application:
     name: ${SPRING_APP_NAME}
@@ -18,6 +18,10 @@ spring:
   cloud:
     config:
       enabled: false
+    gateway:
+      server:
+        webflux:
+          forwarded: enabled
 
     loadbalancer:
       config:
@@ -28,6 +32,7 @@ server:
   host: ${SERVER_HOST}
   port: ${SERVER_PORT}
   scheme: ${SERVER_SCHEME}
+  forward-headers-strategy: framework
   cookie:
     max-age-seconds: 86400
 

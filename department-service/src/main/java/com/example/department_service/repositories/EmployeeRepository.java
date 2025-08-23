@@ -18,7 +18,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     @Query("""
         SELECT e FROM Employee e
         WHERE (:departmentId IS NULL OR e.department.id = :departmentId)
-          AND (:name IS NULL OR LOWER(e.full_name) LIKE LOWER(CONCAT('%', :name, '%')))
+          AND (:name IS NULL OR LOWER(e.fullName) LIKE LOWER(CONCAT('%', :name, '%')))
     """)
     Page<Employee> searchEmployees(
         @Param("departmentId") Long departmentId,
@@ -29,7 +29,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     @Query("""
         SELECT COUNT(e) FROM Employee e
         WHERE (:departmentId IS NULL OR e.department.id = :departmentId)
-          AND (:name IS NULL OR LOWER(c.full_name) LIKE LOWER(CONCAT('%', :name, '%')))
+          AND (:name IS NULL OR LOWER(e.fullName) LIKE LOWER(CONCAT('%', :name, '%')))
     """)
     long countEmployees(
         @Param("departmentId") Long departmentId,
