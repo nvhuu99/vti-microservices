@@ -14,6 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
@@ -24,9 +25,13 @@ public class User {
     @Column(unique = true)
     String email;
 
+    String profileImageUrl;
+
     String password;
 
-    String profileImageUrl;
+    String accessToken;
+
+    String refreshToken;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))

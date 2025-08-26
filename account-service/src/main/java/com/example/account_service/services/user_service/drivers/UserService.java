@@ -17,6 +17,9 @@ public class UserService implements com.example.account_service.services.user_se
     public User findById(Long id) { return repo.findById(id).orElse(null); }
 
     @Override
+    public User findByAccessToken(String accessToken) { return repo.findByAccessToken(accessToken).orElse(null); }
+
+    @Override
     public void setAuthTokens(String username, String accessToken, String refreshToken) throws NotFoundException {
         var user = repo.findByUsername(username);
         if (user.isEmpty()) {

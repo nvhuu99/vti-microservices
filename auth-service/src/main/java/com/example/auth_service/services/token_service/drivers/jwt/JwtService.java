@@ -1,6 +1,7 @@
 package com.example.auth_service.services.token_service.drivers.jwt;
 
 import com.example.auth_service.models.User;
+import com.example.auth_service.repositories.UserRepository;
 import com.example.auth_service.services.token_service.dto.AccessTokenPayload;
 import com.example.auth_service.services.token_service.TokenService;
 import com.example.auth_service.services.token_service.dto.RefreshTokenPayload;
@@ -23,6 +24,9 @@ public class JwtService implements TokenService {
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    private UserRepository userRepo;
 
     @Override
     public String createAccessToken(User user) {
@@ -48,6 +52,9 @@ public class JwtService implements TokenService {
 
     @Override
     public AccessTokenPayload verifyAccessToken(String accessToken) throws InvalidTokenException, TokenExpiredException, TokenRejectedException {
+        if (! userRepo.existsByAccessToken(accessToken)) {
+            throw new TokenRejectedException();
+        }
         var claims = parseJwt(accessToken, true);
         return new JwtAccessTokenPayload(claims);
     }
@@ -59,6 +66,9 @@ public class JwtService implements TokenService {
     ) throws InvalidTokenException, TokenExpiredException, TokenRejectedException {
         var accessTokenPayload = new JwtRefreshTokenPayload(parseJwt(accessToken, false));
         var refreshTokenPayload = new JwtRefreshTokenPayload(parseJwt(refreshToken, true));
+        if (! userRepo.existsByRefreshToken(refreshToken)) {
+            throw new TokenRejectedException();
+        }
         // Token type is not "refresh_token"
         if (! refreshTokenPayload.verifyTokenType()) {
             throw new InvalidTokenException();

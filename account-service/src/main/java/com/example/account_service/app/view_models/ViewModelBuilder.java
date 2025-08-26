@@ -13,24 +13,22 @@ public class ViewModelBuilder {
     private UrlBuilder urlBuilder;
 
     public RegistrationFormAttributes buildRegistrationForm(String successRedirect) {
-        var encodedRedirect = urlBuilder.encode(successRedirect);
         return new RegistrationFormAttributes(
             successRedirect,
             urlBuilder.build("account/register", null),
-            urlBuilder.build("account/login", Map.of("redirect", encodedRedirect)),
-            urlBuilder.build("account/oauth2/authorization/google", Map.of("redirect", encodedRedirect)),
-            urlBuilder.build("account/oauth2/authorization/github", Map.of("redirect", encodedRedirect))
+            urlBuilder.build("account/login", Map.of("redirect", successRedirect)),
+            urlBuilder.build("account/oauth2/authorization/google", Map.of("redirect", successRedirect)),
+            urlBuilder.build("account/oauth2/authorization/github", Map.of("redirect", successRedirect))
         );
     }
 
     public LoginFormAttributes buildLoginForm(String successRedirect) {
-        var encodedRedirect = urlBuilder.encode(successRedirect);
         return new LoginFormAttributes(
             successRedirect,
             urlBuilder.build("account/login", null),
-            urlBuilder.build("account/register", Map.of("redirect", encodedRedirect)),
-            urlBuilder.build("account/oauth2/authorization/google", Map.of("redirect", encodedRedirect)),
-            urlBuilder.build("account/oauth2/authorization/github", Map.of("redirect", encodedRedirect))
+            urlBuilder.build("account/register", Map.of("redirect", successRedirect)),
+            urlBuilder.build("account/oauth2/authorization/google", Map.of("redirect", successRedirect)),
+            urlBuilder.build("account/oauth2/authorization/github", Map.of("redirect", successRedirect))
         );
     }
 }

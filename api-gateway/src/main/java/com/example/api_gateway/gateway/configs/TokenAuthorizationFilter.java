@@ -50,7 +50,7 @@ public class TokenAuthorizationFilter implements GatewayFilter {
             return chain.filter(exchange);
         } catch (TokenExpiredException ex) {
             return refreshToken(exchange, chain, accessToken);
-        } catch (ApiResponseException ex) {
+        } catch (Exception e) {
             return redirectToLogin(exchange);
         }
     }

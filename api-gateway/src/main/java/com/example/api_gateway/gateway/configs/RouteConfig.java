@@ -23,7 +23,10 @@ public class RouteConfig {
             .uri("lb://account-service")
         );
         routes.route("api-account", r -> r
-            .path("/api/v1/accounts/**")
+            .path(
+                "/profile",
+                "/api/v1/accounts/**"
+            )
             .filters(f -> f.filter(tokenAuthorizationFilter))
             .uri("lb://account-service")
         );
